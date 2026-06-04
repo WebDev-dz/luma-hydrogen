@@ -44,13 +44,14 @@ export default function SiteFooter({
           </form>
         </div>
 
-        <div className="mt-20 grid gap-10 border-t border-background/10 pt-12 md:grid-cols-4">
+        <div className="mt-20 grid gap-10 border-t border-background/10 pt-12 md:grid-cols-3">
           {/* Brand — copy stays in code (brand content, not catalog data) */}
           <div>
             <div className="font-serif text-2xl tracking-[0.3em]">LUMA</div>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-background/60">
-              Designing for Luminous Living. Curating spaces that inspire quiet
-              confidence and effortless luxury.
+              Curating objects of quiet luxury — for what you wear, carry, and live with.
+
+
             </p>
           </div>
 

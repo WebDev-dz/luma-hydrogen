@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {Await, NavLink, useAsyncValue} from 'react-router';
+import {Await, Form, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
   useAnalytics,
@@ -7,7 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {ShoppingBag} from 'lucide-react';
+import {Search, ShoppingBag} from 'lucide-react';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -107,7 +107,7 @@ function HeaderCtas({
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink
+      {/* <NavLink
         prefetch="intent"
         to="/account"
         className="text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/80 transition-colors hover:text-foreground"
@@ -117,7 +117,7 @@ function HeaderCtas({
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
           </Await>
         </Suspense>
-      </NavLink>
+      </NavLink> */}
       <SearchToggle />
       <CartToggle cart={cart} />
     </nav>
@@ -137,11 +137,32 @@ function HeaderMenuMobileToggle() {
 }
 
 function SearchToggle() {
-  const {open} = useAside();
   return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
-    </button>
+    <>
+      {/* Mobile: icon navigates directly to search page */}
+      <NavLink
+        to="/search"
+        prefetch="intent"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-secondary sm:hidden"
+      >
+        <Search className="size-4.5" strokeWidth={1.5} />
+      </NavLink>
+
+      {/* Desktop: inline search form that submits to /search?q= */}
+      <Form
+        action="/search"
+        method="get"
+        className="hidden items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 transition-colors focus-within:border-foreground/30 focus-within:bg-background sm:flex"
+      >
+        <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.5} />
+        <input
+          name="q"
+          type="search"
+          placeholder="Search…"
+          className="w-28 bg-transparent text-xs text-foreground placeholder:text-muted-foreground/70 transition-[width] duration-300 focus:w-44 focus:outline-none"
+        />
+      </Form>
+    </>
   );
 }
 
