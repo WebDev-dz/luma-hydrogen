@@ -1,5 +1,5 @@
 import {useLoaderData} from 'react-router';
-import type {Route} from './+types/search';
+import type {Route} from './+types/($locale).search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
@@ -12,6 +12,8 @@ import type {
   RegularSearchQuery,
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
+import {Loader2, SearchIcon} from 'lucide-react';
+import {useState} from 'react';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
@@ -36,42 +38,83 @@ export async function loader({request, context}: Route.LoaderArgs) {
 /**
  * Renders the /search route
  */
+const SUGGESTIONS = ['Ceramics', 'Linen', 'Lighting', 'Vase', 'Throw', 'Brass'];
+
 export default function SearchPage() {
   const {type, term, result, error} = useLoaderData<typeof loader>();
+
+  const [input, setInput] = useState(term);
+  const trimmed = input.trim().toLowerCase();
   if (type === 'predictive') return null;
 
   return (
     <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
-        {({inputRef}) => (
-          <>
-            <input
-              defaultValue={term}
-              name="q"
-              placeholder="Search…"
-              ref={inputRef}
-              type="search"
-            />
-            &nbsp;
-            <button type="submit">Search</button>
-          </>
-        )}
-      </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {!term || !result?.total ? (
-        <SearchResults.Empty />
-      ) : (
-        <SearchResults result={result} term={term}>
-          {({articles, pages, products, term}) => (
-            <div>
-              <SearchResults.Products products={products} term={term} />
-              <SearchResults.Pages pages={pages} term={term} />
-              <SearchResults.Articles articles={articles} term={term} />
-            </div>
+      <section className="mx-auto max-w-7xl px-6 pt-16 pb-10 lg:px-10">
+        <span className="text-[11px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
+          Search
+        </span>
+        <h1 className="mt-3 font-serif text-4xl sm:text-5xl">
+          Find your piece
+        </h1>
+
+        <SearchForm>
+          {({inputRef}) => (
+            <>
+              <div className="mt-8 flex items-center gap-3 border-b border-border pb-4">
+                <SearchIcon
+                  className="h-5 w-5 text-muted-foreground"
+                  strokeWidth={1.5}
+                />
+                <input
+                  defaultValue={term}
+                  autoFocus
+                  name="q"
+                  placeholder="Search ceramics, linens, lighting…"
+                  className="flex-1 bg-transparent text-lg text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+                  ref={inputRef}
+                  type="search"
+                />
+                &nbsp;
+                <button type="submit">Search</button>
+              </div>
+              <div>
+                {trimmed.length === 0 && (
+                  <div className="mt-6 flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                      Try
+                    </span>
+                    {SUGGESTIONS.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setInput(s)}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-secondary"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           )}
-        </SearchResults>
-      )}
+        </SearchForm>
+      </section>
+      <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-10">
+        {error && <p style={{color: 'red'}}>{error}</p>}
+        {!term || !result?.total ? (
+          <SearchResults.Empty term={term} />
+        ) : (
+          <SearchResults result={result} term={term}>
+            {({articles, pages, products, term}) => (
+              <div>
+                <SearchResults.Products products={products} term={term} />
+                <SearchResults.Pages pages={pages} term={term} />
+                <SearchResults.Articles articles={articles} term={term} />
+              </div>
+            )}
+          </SearchResults>
+        )}
+      </section>
       <Analytics.SearchView data={{searchTerm: term, searchResults: result}} />
     </div>
   );
@@ -128,6 +171,7 @@ const SEARCH_PAGE_FRAGMENT = `#graphql
      handle
     id
     title
+    bodySummary
     trackingParameters
   }
 ` as const;
@@ -137,6 +181,17 @@ const SEARCH_ARTICLE_FRAGMENT = `#graphql
     __typename
     handle
     id
+    image {
+      url
+      altText
+      width
+      height
+    }
+    publishedAt
+    excerpt
+    authorV2 {
+      name
+    }
     title
     trackingParameters
   }

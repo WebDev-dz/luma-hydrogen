@@ -1,5 +1,6 @@
+/* styles/reset.css */
 body {
-  font-family:
+  /* font-family:
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -10,52 +11,12 @@ body {
     Cantarell,
     'Open Sans',
     'Helvetica Neue',
-    sans-serif;
+    sans-serif; */
   margin: 0;
   padding: 0;
 }
 
-h1,
-h2,
-p {
-  margin: 0;
-  padding: 0;
-}
 
-h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.4;
-  margin-bottom: 2rem;
-  margin-top: 2rem;
-}
-
-h2 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.4;
-  margin-bottom: 1rem;
-}
-
-h4 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-h5 {
-  margin-bottom: 1rem;
-  margin-top: 0.5rem;
-}
-
-p {
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-a {
-  color: #000;
-  text-decoration: none;
-}
 
 a:hover {
   text-decoration: underline;
@@ -64,9 +25,10 @@ a:hover {
 
 hr {
   border-bottom: none;
-  border-top: 1px solid #000;
+  border-top: 1px solid var(--border);
   margin: 0;
 }
+
 
 pre {
   white-space: pre-wrap;
@@ -82,12 +44,7 @@ body > main {
   margin: 0 1rem 1rem 1rem;
 }
 
-section {
-  padding: 1rem 0;
-  @media (min-width: 768px) {
-    padding: 2rem 0;
-  }
-}
+
 
 fieldset {
   display: flex;
@@ -96,21 +53,9 @@ fieldset {
   padding: 1rem;
 }
 
-form {
-  max-width: 100%;
-  @media (min-width: 768px) {
-    max-width: 400px;
-  }
-}
 
-input {
-  border-radius: 4px;
-  border: 1px solid #000;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-}
+
+
 
 legend {
   font-weight: 600;
@@ -131,9 +76,11 @@ dl {
   margin: 0.5rem 0;
 }
 
+
+
 code {
-  background: #ddd;
-  border-radius: 4px;
+  background: var(--muted);
+  border-radius: var(--radius);
   font-family: monospace;
   padding: 0.25rem;
 }

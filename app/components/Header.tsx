@@ -7,6 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {ShoppingBag} from 'lucide-react';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -26,8 +27,13 @@ export function Header({
   const {shop, menu} = header;
   return (
     <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
+      <NavLink
+        prefetch="intent"
+        to="/"
+        className="font-serif text-2xl tracking-[0.3em] text-foreground"
+        end
+      >
+        {shop.name}
       </NavLink>
       <HeaderMenu
         menu={menu}
@@ -61,7 +67,7 @@ export function HeaderMenu({
           end
           onClick={close}
           prefetch="intent"
-          style={activeLinkStyle}
+          className={headerNavLinkClassName}
           to="/"
         >
           Home
@@ -79,12 +85,11 @@ export function HeaderMenu({
             : item.url;
         return (
           <NavLink
-            className="header-menu-item"
+            className={headerNavLinkClassName}
             end
             key={item.id}
             onClick={close}
             prefetch="intent"
-            style={activeLinkStyle}
             to={url}
           >
             {item.title}
@@ -102,7 +107,11 @@ function HeaderCtas({
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+      <NavLink
+        prefetch="intent"
+        to="/account"
+        className="text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/80 transition-colors hover:text-foreground"
+      >
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
@@ -143,6 +152,7 @@ function CartBadge({count}: {count: number}) {
   return (
     <a
       href="/cart"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-secondary"
       onClick={(e) => {
         e.preventDefault();
         open('cart');
@@ -154,7 +164,15 @@ function CartBadge({count}: {count: number}) {
         } as CartViewPayload);
       }}
     >
-      Cart <span aria-label={`(items: ${count})`}>{count}</span>
+      <ShoppingBag className="size-4.5" strokeWidth={1.5} />{' '}
+      {count > 0 && (
+        <span
+        className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground"
+        aria-label={`(items: ${count})`}
+      >
+        {count}
+      </span>
+      )}
     </a>
   );
 }
@@ -217,15 +235,16 @@ const FALLBACK_HEADER_MENU = {
   ],
 };
 
-function activeLinkStyle({
+function headerNavLinkClassName({
   isActive,
   isPending,
 }: {
   isActive: boolean;
   isPending: boolean;
 }) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
-  };
+  return [
+    'text-[11px] font-medium uppercase tracking-[0.18em] transition-colors',
+    isActive ? 'text-foreground' : 'text-foreground/80 hover:text-foreground',
+    isPending ? 'opacity-60' : '',
+  ].join(' ');
 }

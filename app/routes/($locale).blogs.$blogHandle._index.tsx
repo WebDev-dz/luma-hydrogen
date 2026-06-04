@@ -1,9 +1,11 @@
 import {Link, useLoaderData} from 'react-router';
-import type {Route} from './+types/blogs.$blogHandle._index';
+import type {Route} from './+types/($locale).blogs.$blogHandle._index';
 import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {ArrowRight, BookOpen} from 'lucide-react';
+import EmptyState from '~/components/EmptyState';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Hydrogen | ${data?.blog.title ?? ''} blog`}];
@@ -65,19 +67,53 @@ export default function Blog() {
   const {articles} = blog;
 
   return (
-    <div className="blog">
-      <h1>{blog.title}</h1>
-      <div className="blog-grid">
-        <PaginatedResourceSection<ArticleItemFragment> connection={articles}>
+    <div>
+      {/* Page Header */}
+      <div className="border-b border-border bg-cream/60">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
+          <Link
+            to="/blogs"
+            className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <BookOpen className="h-3 w-3" />
+            All Blogs
+          </Link>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h1 className="font-serif text-5xl leading-tight text-foreground lg:text-6xl">
+              {blog.title}
+            </h1>
+            {blog.seo?.description && (
+              <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
+                {blog.seo.description}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Articles Grid */}
+      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
+        <PaginatedResourceSection<ArticleItemFragment>
+          connection={articles}
+          resourcesClassName="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {({node: article, index}) => (
             <ArticleItem
               article={article}
               key={article.id}
-              loading={index < 2 ? 'eager' : 'lazy'}
+              loading={index < 3 ? 'eager' : 'lazy'}
+              index={index}
             />
           )}
         </PaginatedResourceSection>
-      </div>
+
+        {articles.nodes.length === 0 && (
+          <EmptyState
+            title="No articles yet"
+            body="This blog has no articles published yet. Check back soon for new content."
+          />
+        )}
+      </section>
     </div>
   );
 }
@@ -85,33 +121,62 @@ export default function Blog() {
 function ArticleItem({
   article,
   loading,
+  index,
 }: {
   article: ArticleItemFragment;
   loading?: HTMLImageElement['loading'];
+  index: number;
 }) {
   const publishedAt = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(new Date(article.publishedAt!));
+
   return (
-    <div className="blog-article" key={article.id}>
-      <Link to={`/blogs/${article.blog.handle}/${article.handle}`}>
-        {article.image && (
-          <div className="blog-article-image">
-            <Image
-              alt={article.image.altText || article.title}
-              aspectRatio="3/2"
-              data={article.image}
-              loading={loading}
-              sizes="(min-width: 768px) 50vw, 100vw"
-            />
+    <Link
+      to={`/blogs/${article.blog.handle}/${article.handle}`}
+      prefetch="intent"
+      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-shadow duration-300 hover:shadow-md"
+    >
+      {/* Article image */}
+      <div className="aspect-3/2 overflow-hidden bg-muted">
+        {article.image ? (
+          <Image
+            alt={article.image.altText || article.title}
+            aspectRatio="3/2"
+            data={article.image}
+            loading={loading}
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <BookOpen className="h-10 w-10 text-muted-foreground/30" strokeWidth={1} />
           </div>
         )}
-        <h3>{article.title}</h3>
-        <small>{publishedAt}</small>
-      </Link>
-    </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-3 flex items-center gap-3">
+          <time className="text-xs text-muted-foreground">{publishedAt}</time>
+          {article.author?.name && (
+            <>
+              <span className="h-1 w-1 rounded-full bg-border" />
+              <span className="text-xs text-muted-foreground">{article.author.name}</span>
+            </>
+          )}
+        </div>
+
+        <h3 className="font-serif text-xl leading-snug text-foreground">{article.title}</h3>
+
+        <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground transition-all duration-300 group-hover:gap-2.5 group-hover:text-foreground">
+          Read article
+          <ArrowRight className="h-3 w-3" />
+        </span>
+      </div>
+    </Link>
   );
 }
 

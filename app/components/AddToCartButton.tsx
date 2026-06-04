@@ -25,6 +25,7 @@ export function AddToCartButton({
           />
           <button
             type="submit"
+            className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-8 text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
             onClick={onClick}
             disabled={disabled ?? fetcher.state !== 'idle'}
           >

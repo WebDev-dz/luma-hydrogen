@@ -1,13 +1,15 @@
 import {Link, useLoaderData} from 'react-router';
-import type {Route} from './+types/blogs._index';
+import type {Route} from './+types/($locale).blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
+import {ArrowRight, BookOpen, Newspaper} from 'lucide-react';
+import EmptyState from '~/components/EmptyState';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Blogs`}];
+  return [{title: `Voltex | Blogs`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -54,23 +56,87 @@ export default function Blogs() {
   const {blogs} = useLoaderData<typeof loader>();
 
   return (
-    <div className="blogs">
-      <h1>Blogs</h1>
-      <div className="blogs-grid">
-        <PaginatedResourceSection<BlogNode> connection={blogs}>
-          {({node: blog}) => (
-            <Link
-              className="blog"
-              key={blog.handle}
-              prefetch="intent"
-              to={`/blogs/${blog.handle}`}
-            >
-              <h2>{blog.title}</h2>
-            </Link>
+    <div>
+      {/* Page Header */}
+      <div className="border-b border-border bg-cream/60">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">
+            Read
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h1 className="font-serif text-5xl leading-tight text-foreground lg:text-6xl">
+              Our Blogs
+            </h1>
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
+              Explore our journals — stories, guides, and ideas curated for curious minds.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Blogs Grid */}
+      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
+        <PaginatedResourceSection<BlogNode>
+          connection={blogs}
+          resourcesClassName="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {({node: blog, index}) => (
+            <BlogCard key={blog.handle} blog={blog} index={index} />
           )}
         </PaginatedResourceSection>
-      </div>
+
+        {blogs.nodes.length === 0 && (
+          <EmptyState
+            title="No blogs yet"
+            body="Our writers are preparing the first stories. Please check back soon."
+          />
+        )}
+      </section>
     </div>
+  );
+}
+
+const ACCENT_COLORS = [
+  'from-indigo-50 to-indigo-100/60',
+  'from-amber-50 to-amber-100/60',
+  'from-rose-50 to-rose-100/60',
+  'from-emerald-50 to-emerald-100/60',
+  'from-sky-50 to-sky-100/60',
+  'from-violet-50 to-violet-100/60',
+];
+
+function BlogCard({blog, index}: {blog: BlogNode; index: number}) {
+  const gradient = ACCENT_COLORS[index % ACCENT_COLORS.length];
+  const Icon = index % 2 === 0 ? BookOpen : Newspaper;
+
+  return (
+    <Link
+      to={`/blogs/${blog.handle}`}
+      prefetch="intent"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-shadow duration-300 hover:shadow-md"
+    >
+      {/* Decorative top band */}
+      <div className={`h-36 bg-linear-to-br ${gradient} flex items-center justify-center`}>
+        <Icon className="h-12 w-12 text-foreground/20 transition-transform duration-500 group-hover:scale-110" strokeWidth={1} />
+        <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-background/80 text-[10px] font-medium text-foreground backdrop-blur-sm">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-6">
+        {blog.seo?.description && (
+          <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+            {blog.seo.description}
+          </p>
+        )}
+        <h2 className="font-serif text-2xl leading-snug text-foreground">{blog.title}</h2>
+        <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground transition-all duration-300 group-hover:gap-2.5 group-hover:text-foreground">
+          Read articles
+          <ArrowRight className="h-3 w-3" />
+        </span>
+      </div>
+    </Link>
   );
 }
 

@@ -1,11 +1,13 @@
+/* styles/app.css */
 :root {
   --aside-width: 400px;
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
   --header-height: 64px;
-  --color-dark: #000;
-  --color-light: #fff;
+  /* repointed to the Lovable palette */
+  --color-dark: var(--ink);
+  --color-light: var(--background);
 }
 
 img {
@@ -227,7 +229,8 @@ button.reset:hover:not(:has(> *)) {
 */
 .header {
   align-items: center;
-  background: #fff;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
   display: flex;
   height: var(--header-height);
   padding: 0 1rem;
@@ -487,6 +490,7 @@ button.reset:hover:not(:has(> *)) {
 .product-item img {
   height: auto;
   width: 100%;
+  border-radius: var(--radius-lg);
 }
 
 /*

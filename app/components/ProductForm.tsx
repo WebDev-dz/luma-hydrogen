@@ -25,7 +25,7 @@ export function ProductForm({
 
         return (
           <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
+            <h5 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">{option.name}</h5>
             <div className="product-options-grid">
               {option.optionValues.map((value) => {
                 const {
@@ -71,17 +71,16 @@ export function ProductForm({
                   return (
                     <button
                       type="button"
-                      className={`product-options-item${
-                        exists && !selected ? ' link' : ''
+                      className={`rounded-full border px-4 py-2 text-xs transition-colors${
+                        exists && selected
+                          ? ' border-primary bg-primary text-primary-foreground'
+                          : 'border-border bg-background text-foreground hover:border-foreground'
                       }`}
                       key={option.name + name}
                       style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
                         opacity: available ? 1 : 0.3,
                       }}
-                      disabled={!exists}
+                      disabled={!exists || !available}
                       onClick={() => {
                         if (!selected) {
                           void navigate(`?${variantUriQuery}`, {

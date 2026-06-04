@@ -1,11 +1,11 @@
 import {useLoaderData, data, type HeadersFunction} from 'react-router';
-import type {Route} from './+types/cart';
+import type {Route} from './+types/($locale).cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [{title: `Luma | Cart`}];
 };
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
@@ -103,10 +103,27 @@ export async function loader({context}: Route.LoaderArgs) {
 
 export default function Cart() {
   const cart = useLoaderData<typeof loader>();
+  const itemCount = cart?.totalQuantity ?? 0;
 
   return (
-    <div className="cart">
-      <h1>Cart</h1>
+    <div>
+      <div className="border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10 lg:py-14">
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
+            Your Order
+          </p>
+          <div className="flex items-end justify-between">
+            <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
+              Shopping Cart
+            </h1>
+            {itemCount > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {itemCount} {itemCount === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
       <CartMain layout="page" cart={cart} />
     </div>
   );

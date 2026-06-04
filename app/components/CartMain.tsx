@@ -4,6 +4,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import {ShoppingBag} from 'lucide-react';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -37,32 +38,30 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
  * It is used by both the /cart route and the cart aside dialog.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
-  // The useOptimisticCart hook applies pending actions to the cart
-  // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
 
   const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
-  const withDiscount =
-    cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
+  const isPage = layout === 'page';
 
   return (
-    <section
-      className={className}
-      aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
-    >
+    <section aria-label={isPage ? 'Cart page' : 'Cart drawer'}>
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
-        <p id="cart-lines" className="sr-only">
-          Line items
-        </p>
+      <div
+        className={
+          isPage
+            ? 'mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-12 lg:px-10 lg:py-14'
+            : 'cart-details'
+        }
+      >
         <div>
-          <ul aria-labelledby="cart-lines">
+          <p id="cart-lines" className="sr-only">Line items</p>
+          <ul
+            aria-labelledby="cart-lines"
+            className={isPage ? 'divide-y divide-border' : ''}
+          >
             {(cart?.lines?.nodes ?? []).map((line) => {
-              // we do not render non-parent lines at the root of the cart
               if (
                 'parentRelationship' in line &&
                 line.parentRelationship?.parent
@@ -88,22 +87,43 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 
 function CartEmpty({
   hidden = false,
+  layout,
 }: {
   hidden: boolean;
   layout?: CartMainProps['layout'];
 }) {
   const {close} = useAside();
+  const isPage = layout === 'page';
+
   return (
     <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
-      </Link>
+      <div
+        className={
+          isPage
+            ? 'mx-auto flex max-w-7xl flex-col items-center justify-center px-6 py-32 text-center lg:px-10'
+            : 'flex flex-col items-center justify-center py-16 text-center'
+        }
+      >
+        <ShoppingBag
+          className="h-12 w-12 text-muted-foreground/40"
+          strokeWidth={1}
+        />
+        <h2 className="mt-4 font-serif text-2xl text-foreground">
+          Your cart is empty
+        </h2>
+        <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+          Looks like you haven&rsquo;t added anything yet — let&rsquo;s fix
+          that.
+        </p>
+        <Link
+          to="/collections"
+          onClick={close}
+          prefetch="viewport"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Browse Collections
+        </Link>
+      </div>
     </div>
   );
 }
