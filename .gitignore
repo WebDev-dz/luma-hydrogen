@@ -7,6 +7,6 @@ node_modules
 .env
 .shopify
 .react-router
-.CLAUDE
-.cursor
-.trae
+.CLAUDE/
+.cursor/
+.trae/
