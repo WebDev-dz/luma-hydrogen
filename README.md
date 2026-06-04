@@ -1,6 +1,6 @@
-# Voltex — Hydrogen Storefront
+# Luma — Hydrogen Storefront
 
-A custom Shopify headless storefront built with **Hydrogen**, **React Router v7**, and **Tailwind CSS v4**. Voltex is a premium e-commerce theme with a refined editorial aesthetic, full i18n support, and a performant server-rendered architecture.
+A custom Shopify headless storefront built with **Hydrogen**, **React Router v7**, and **Tailwind CSS v4**. Luma is a premium e-commerce theme with a refined editorial aesthetic, full i18n support, and a performant server-rendered architecture.
 
 ---
 
@@ -13,8 +13,6 @@ A custom Shopify headless storefront built with **Hydrogen**, **React Router v7*
 | Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
 | UI primitives | [Radix UI](https://www.radix-ui.com/) (Dialog, ScrollArea, Tooltip) |
 | Icons | [Lucide React](https://lucide.dev/) |
-| Carousels | [Swiper](https://swiperjs.com/) |
-| CMS / Theme | [Weaverse Hydrogen](https://weaverse.io/) |
 | Runtime | [Oxygen](https://shopify.dev/custom-storefronts/oxygen) (Shopify edge hosting) |
 | Language | TypeScript |
 
@@ -106,7 +104,7 @@ The store will be available at `http://localhost:3000`.
 
 ## Deployment
 
-Voltex is designed to deploy to **Shopify Oxygen** (zero-config edge hosting):
+Luma is designed to deploy to **Shopify Oxygen** (zero-config edge hosting):
 
 ```bash
 npx shopify hydrogen deploy
